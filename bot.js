@@ -1,3 +1,5 @@
+var bot = require('./api/getTrainsData.js');
+
 var token = process.env.TOKEN;
 console.log(token);
 console.log(process.env.NODE_ENV);
@@ -19,6 +21,27 @@ bot.onText(/^\/say_hello (.+)$/, function (msg, match) {
   var name = match[1];
   bot.sendMessage(msg.chat.id, 'Hello ' + name + '!').then(function () {
     // reply sent!
+  });
+});
+
+// hello command
+bot.onText(/^\/start/, function (msg) {
+  var from = false, to = false;
+  trip_date = new Date();
+  bot.sendMessage(msg.chat.id, 'Привіт! Звідки їдемо?').then(function () {
+    bot.on('text', function (msg, match) {
+      if (!from){
+        from = msg.text;
+        bot.sendMessage(msg.chat.id, 'Ок, отже ' + from + '. А куди?');
+      }
+      else if (!to){
+        to = msg.text;
+        bot.sendMessage(msg.chat.id, 'Ще скажи мені, коли ти збираєшся виїжджати в форматі ДД.ММ. Сьогодні ' + trip_date.getDate() + '.' + (trip_date.getMonth() + 1) );
+      } else {
+        date = msg.text;
+        getTrainsData()
+      }
+    });
   });
 });
 
