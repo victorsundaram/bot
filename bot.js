@@ -1,4 +1,5 @@
-var bot = require('./api/getTrainsData.js');
+var getTrainsData = require('./api/getTrainsData.js');
+var moment = require('moment');
 
 var token = process.env.TOKEN;
 console.log(token);
@@ -25,21 +26,21 @@ bot.onText(/^\/say_hello (.+)$/, function (msg, match) {
 });
 
 // hello command
-bot.onText(/^\/start/, function (msg) {
+bot.onText(/^\/s/, function (msg) {
   var from = false, to = false;
   trip_date = new Date();
   bot.sendMessage(msg.chat.id, 'Привіт! Звідки їдемо?').then(function () {
     bot.on('text', function (msg, match) {
       if (!from){
         from = msg.text;
-        bot.sendMessage(msg.chat.id, 'Ок, отже ' + from + '. А куди?');
+        bot.sendMessage(msg.chat.id, 'А куди?');
       }
       else if (!to){
         to = msg.text;
-        bot.sendMessage(msg.chat.id, 'Ще скажи мені, коли ти збираєшся виїжджати в форматі ДД.ММ. Сьогодні ' + trip_date.getDate() + '.' + (trip_date.getMonth() + 1) );
+        bot.sendMessage(msg.chat.id, 'Ще скажи мені, коли ти збираєшся виїжджати в форматі ДД.ММ.РРРР\nСьогодні ' + moment().format('DD.MM.YYYY'));
       } else {
         date = msg.text;
-        getTrainsData()
+        getTrainsData({station_from: from, station_till: to, date_dep: date});
       }
     });
   });
